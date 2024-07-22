@@ -5,7 +5,7 @@
 ![Erlang-compatible](https://img.shields.io/badge/target-erlang-a2003e)
 ![JavaScript-compatible](https://img.shields.io/badge/target-javascript-f1e05a)
 
-Gleam validators using Glerd metadata
+Gleam Record validators using Glerd metadata
 
 ```sh
 gleam add --dev glerd glerd_valid
