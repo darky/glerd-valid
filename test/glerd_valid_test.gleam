@@ -12,7 +12,7 @@ pub fn generate_test() {
       "TestInt",
       "fixture_test",
       [#("age", types.IsInt)],
-      "valid:age:'gte=0' valid:age:'lte=1000' valid:age:'gt=1' valid:age:'lt=999' valid:age:'eq=35' valid:age:'ne=555'",
+      "valid:age:'gte=0, lte=1000, gt=1, lt=999, eq=35, ne=555'",
     ),
     #("TestString", "fixture_test", [#("name", types.IsString)], ""),
     #("TestFloat", "fixture_test", [#("distance", types.IsFloat)], ""),

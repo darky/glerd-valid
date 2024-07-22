@@ -23,7 +23,7 @@ pub fn generate(root, record_info) {
 
     " <> imports, fn(acc, rinfo) {
       let #(record_name, module_name, _, meta) = rinfo
-      let assert Ok(re) = "valid:(\\w+):'([\\w=]+)'" |> regex.from_string
+      let assert Ok(re) = "valid:(\\w+):'([\\w=, ]+)'" |> regex.from_string
       let validations = regex.scan(re, meta)
 
       let validation_body =
