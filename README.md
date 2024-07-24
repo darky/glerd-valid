@@ -11,11 +11,9 @@ Gleam Record validators using Glerd metadata
 gleam add --dev glerd glerd_valid
 ```
 
-#### 1. Generate types info
+#### 1. Describe your records with validation metadata
 
-Use [Glerd](https://github.com/darky/glerd)
-
-Example of metadata:
+Example:
 
 ```gleam
 pub type User {
@@ -25,7 +23,11 @@ pub type User {
 }
 ```
 
-#### 2. Make module for validators generation
+#### 2. Generate Records info
+
+Use [Glerd](https://github.com/darky/glerd)
+
+#### 3. Make module for validators generation
 
 ###### my_module.gleam
 
@@ -39,7 +41,7 @@ pub fn main() {
 }
 ```
 
-#### 3. Gen validators
+#### 4. Gen validators
 
 ```sh
 gleam run -m my_module
