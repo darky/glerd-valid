@@ -19,9 +19,9 @@ Example of metadata:
 
 ```gleam
 pub type User {
-  /// valid:age:'gte=18'
-  /// valid:age:'lt=150'
-  User(age: Int)
+  /// valid:age:'gte=18, lt=150'
+  /// valid:name:'gte=3, lt=100'
+  User(age: Int, name: String)
 }
 ```
 
@@ -49,12 +49,14 @@ Further documentation can be found at <https://hexdocs.pm/glerd_valid>.
 
 ## Supported metadata
 
-- [x] gte
-- [x] gt
-- [x] lte
-- [x] lt
-- [x] eq
-- [x] ne
+#### Int, String
+
+- *gte*, *min* - Number/String length should greater or equal than
+- *gt* - Number/String length should greater than
+- *lte*, *max* - Number/String length should less or equal than
+- *lt* - Number/String length should less than
+- *eq* - should be equal to
+- *ne* - should not be equal to
 
 ## Development
 
