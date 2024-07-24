@@ -12,10 +12,20 @@ pub fn generate_test() {
       "TestInt",
       "fixture_test",
       [#("age", types.IsInt)],
-      "valid:age:'gte=0, lte=1000, gt=1, lt=999, eq=35, ne=555'",
+      "valid:age:'gte=0, min=0, lte=1000, max=1000, gt=1, lt=999, eq=35, ne=555'",
     ),
-    #("TestString", "fixture_test", [#("name", types.IsString)], ""),
-    #("TestFloat", "fixture_test", [#("distance", types.IsFloat)], ""),
+    #(
+      "TestString",
+      "fixture_test",
+      [#("name", types.IsString)],
+      "valid:name:'gte=0, min=0, lte=100, max=100, gt=1, lt=99, eq=Barsik, ne=Mosya'",
+    ),
+    #(
+      "TestFloat",
+      "fixture_test",
+      [#("distance", types.IsFloat)],
+      "valid:distance:'gte=0.0, min=0.0, lte=1000.0, max=1000.0, gt=1.0, lt=999.0, eq=35.0, ne=555.0'",
+    ),
     #("TestBool", "fixture_test", [#("is_exists", types.IsBool)], ""),
     #(
       "TestMultiple",

@@ -1,6 +1,7 @@
 // this file was generated via glerd_valid
 
 import gleam/bool
+import gleam/string
 
 import fixture_test
 
@@ -8,6 +9,16 @@ pub fn test_int_valid(x: fixture_test.TestInt) {
   use <- bool.guard(
     { x.age >= 0 } |> bool.negate,
     Error("fixture_test.TestInt.age should be greater or equal than 0"),
+  )
+
+  use <- bool.guard(
+    { x.age >= 0 } |> bool.negate,
+    Error("fixture_test.TestInt.age should be greater or equal than 0"),
+  )
+
+  use <- bool.guard(
+    { x.age <= 1000 } |> bool.negate,
+    Error("fixture_test.TestInt.age should be less or equal than 1000"),
   )
 
   use <- bool.guard(
@@ -39,6 +50,54 @@ pub fn test_int_valid(x: fixture_test.TestInt) {
 }
 
 pub fn test_string_valid(x: fixture_test.TestString) {
+  use <- bool.guard(
+    { string.length(x.name) >= 0 } |> bool.negate,
+    Error(
+      "fixture_test.TestString.name length should be greater or equal than 0",
+    ),
+  )
+
+  use <- bool.guard(
+    { string.length(x.name) >= 0 } |> bool.negate,
+    Error(
+      "fixture_test.TestString.name length should be greater or equal than 0",
+    ),
+  )
+
+  use <- bool.guard(
+    { string.length(x.name) <= 100 } |> bool.negate,
+    Error(
+      "fixture_test.TestString.name length should be less or equal than 100",
+    ),
+  )
+
+  use <- bool.guard(
+    { string.length(x.name) <= 100 } |> bool.negate,
+    Error(
+      "fixture_test.TestString.name length should be less or equal than 100",
+    ),
+  )
+
+  use <- bool.guard(
+    { string.length(x.name) > 1 } |> bool.negate,
+    Error("fixture_test.TestString.name length should be greater than 1"),
+  )
+
+  use <- bool.guard(
+    { string.length(x.name) < 99 } |> bool.negate,
+    Error("fixture_test.TestString.name length should be less than 99"),
+  )
+
+  use <- bool.guard(
+    { x.name == "Barsik" } |> bool.negate,
+    Error("fixture_test.TestString.name should be equal to \"Barsik\""),
+  )
+
+  use <- bool.guard(
+    { x.name != "Mosya" } |> bool.negate,
+    Error("fixture_test.TestString.name should not be equal to \"Mosya\""),
+  )
+
   Ok(Nil)
 }
 
