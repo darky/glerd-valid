@@ -102,6 +102,46 @@ pub fn test_string_valid(x: fixture_test.TestString) {
 }
 
 pub fn test_float_valid(x: fixture_test.TestFloat) {
+  use <- bool.guard(
+    { x.distance >=. 0.0 } |> bool.negate,
+    Error("fixture_test.TestFloat.distance should be greater or equal than 0.0"),
+  )
+
+  use <- bool.guard(
+    { x.distance >=. 0.0 } |> bool.negate,
+    Error("fixture_test.TestFloat.distance should be greater or equal than 0.0"),
+  )
+
+  use <- bool.guard(
+    { x.distance <=. 1000.0 } |> bool.negate,
+    Error("fixture_test.TestFloat.distance should be less or equal than 1000.0"),
+  )
+
+  use <- bool.guard(
+    { x.distance <=. 1000.0 } |> bool.negate,
+    Error("fixture_test.TestFloat.distance should be less or equal than 1000.0"),
+  )
+
+  use <- bool.guard(
+    { x.distance >. 1.0 } |> bool.negate,
+    Error("fixture_test.TestFloat.distance should be greater than 1.0"),
+  )
+
+  use <- bool.guard(
+    { x.distance <. 999.0 } |> bool.negate,
+    Error("fixture_test.TestFloat.distance should be less than 999.0"),
+  )
+
+  use <- bool.guard(
+    { x.distance == 35.0 } |> bool.negate,
+    Error("fixture_test.TestFloat.distance should be equal to 35.0"),
+  )
+
+  use <- bool.guard(
+    { x.distance != 555.0 } |> bool.negate,
+    Error("fixture_test.TestFloat.distance should not be equal to 555.0"),
+  )
+
   Ok(Nil)
 }
 

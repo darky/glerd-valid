@@ -51,14 +51,14 @@ Further documentation can be found at <https://hexdocs.pm/glerd_valid>.
 
 ## Supported metadata
 
-#### Int, String
+#### Int, Float, String
 
-- *gte*, *min* - Number/String length should greater or equal than
-- *gt* - Number/String length should greater than
-- *lte*, *max* - Number/String length should less or equal than
-- *lt* - Number/String length should less than
-- *eq* - should be equal to
-- *ne* - should not be equal to
+- _gte_, _min_ - Number/Float/String length should greater or equal than
+- _gt_ - Number/Float/String length should greater than
+- _lte_, _max_ - Number/Float/String length should less or equal than
+- _lt_ - Number/Float/String length should less than
+- _eq_ - should be equal to
+- _ne_ - should not be equal to
 
 ## Development
 
