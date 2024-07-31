@@ -1,5 +1,5 @@
 name = "glerd_valid"
-version = "0.3.0"
+version = "0.4.0"
 description = "Gleam Record validators using Glerd metadata"
 licences = ["MIT"]
 repository = { type = "github", user = "darky", repo = "glerd-valid" }
