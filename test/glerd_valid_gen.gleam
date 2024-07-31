@@ -146,6 +146,16 @@ pub fn test_float_valid(x: fixture_test.TestFloat) {
 }
 
 pub fn test_bool_valid(x: fixture_test.TestBool) {
+  use <- bool.guard(
+    { x.is_exists == True } |> bool.negate,
+    Error("fixture_test.TestBool.is_exists should be equal to True"),
+  )
+
+  use <- bool.guard(
+    { x.is_exists != False } |> bool.negate,
+    Error("fixture_test.TestBool.is_exists should not be equal to False"),
+  )
+
   Ok(Nil)
 }
 

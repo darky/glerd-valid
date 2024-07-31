@@ -94,7 +94,10 @@ pub fn generate(root, record_info) {
               use <- bool.guard({ string.length(x." <> field_name <> ") < " <> val <> " } |> bool.negate,
                 Error(\"" <> module_name <> "." <> record_name <> "." <> field_name <> " length should be less than " <> val <> "\"))
             "]
-            "eq", Ok(types.IsInt) | "eq", Ok(types.IsFloat) -> ["
+            "eq", Ok(types.IsInt)
+            | "eq", Ok(types.IsFloat)
+            | "eq", Ok(types.IsBool)
+            -> ["
               use <- bool.guard({ x." <> field_name <> " == " <> val <> " } |> bool.negate,
                 Error(\"" <> module_name <> "." <> record_name <> "." <> field_name <> " should be equal to " <> val <> "\"))
             "]
@@ -102,7 +105,10 @@ pub fn generate(root, record_info) {
               use <- bool.guard({ x." <> field_name <> " == \"" <> val <> "\" } |> bool.negate,
                 Error(\"" <> module_name <> "." <> record_name <> "." <> field_name <> " should be equal to \\\"" <> val <> "\\\"\"))
             "]
-            "ne", Ok(types.IsInt) | "ne", Ok(types.IsFloat) -> ["
+            "ne", Ok(types.IsInt)
+            | "ne", Ok(types.IsFloat)
+            | "ne", Ok(types.IsBool)
+            -> ["
               use <- bool.guard({ x." <> field_name <> " != " <> val <> " } |> bool.negate,
                 Error(\"" <> module_name <> "." <> record_name <> "." <> field_name <> " should not be equal to " <> val <> "\"))
             "]
@@ -110,7 +116,13 @@ pub fn generate(root, record_info) {
               use <- bool.guard({ x." <> field_name <> " != \"" <> val <> "\" } |> bool.negate,
                 Error(\"" <> module_name <> "." <> record_name <> "." <> field_name <> " should not be equal to \\\"" <> val <> "\\\"\"))
             "]
-            _, _ -> panic as { "Unknown rule key: " <> key }
+            key, typ ->
+              panic as {
+                "Unknown rule for key: "
+                <> key
+                <> " , type: "
+                <> string.inspect(typ)
+              }
           }
         }
         |> string.join("\n")

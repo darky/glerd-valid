@@ -26,7 +26,12 @@ pub fn generate_test() {
       [#("distance", types.IsFloat)],
       "valid:distance:'gte=0.0, min=0.0, lte=1000.0, max=1000.0, gt=1.0, lt=999.0, eq=35.0, ne=555.0'",
     ),
-    #("TestBool", "fixture_test", [#("is_exists", types.IsBool)], ""),
+    #(
+      "TestBool",
+      "fixture_test",
+      [#("is_exists", types.IsBool)],
+      "valid:is_exists:'eq=True, ne=False'",
+    ),
     #(
       "TestMultiple",
       "fixture_test",
