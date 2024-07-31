@@ -51,14 +51,15 @@ Further documentation can be found at <https://hexdocs.pm/glerd_valid>.
 
 ## Supported metadata
 
-#### Int, Float, String
+| operator | type                        | description                        |
+|----------|-----------------------------|------------------------------------|
+| gte, min | Int, Float, String (length) | should be greater than or equal to |
+| gt       | Int, Float, String (length) | should be greater than             |
+| lte, max | Int, Float, String (length) | should be less than or equal to    |
+| lt       | Int, Float, String (length) | should be less than                |
+| eq       | Int, Float, String, Bool    | should be equal to                 |
+| ne       | Int, Float, String, Bool    | should not be equal to             |
 
-- _gte_, _min_ - Number/Float/String length should greater or equal than
-- _gt_ - Number/Float/String length should greater than
-- _lte_, _max_ - Number/Float/String length should less or equal than
-- _lt_ - Number/Float/String length should less than
-- _eq_ - should be equal to
-- _ne_ - should not be equal to
 
 ## Development
 
