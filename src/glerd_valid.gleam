@@ -23,10 +23,11 @@ pub fn generate(root, record_info) {
 
     import gleam/bool
     import gleam/string
+    import gleam/list
 
     " <> imports, fn(acc, rinfo) {
       let #(record_name, module_name, fields, meta) = rinfo
-      let assert Ok(re) = "valid:(\\w+):'([\\w=,\\. ]+)'" |> regex.from_string
+      let assert Ok(re) = "valid:(\\w+):(\\w+):'([^']+)'" |> regex.from_string
       let validations = regex.scan(re, meta)
 
       let field_type_by_name =
@@ -39,89 +40,150 @@ pub fn generate(root, record_info) {
       let validation_body =
         {
           use validation <- list.flat_map(validations)
-          let assert Match(_, [Some(field_name), Some(rules)]) = validation
+          let assert Match(
+            _,
+            [Some(field_name), Some(check_level), Some(rules)],
+          ) = validation
           let rules = rules |> string.split(",")
           use rule <- list.flat_map(rules)
-          let assert Ok(re) = "(\\w+)=([\\w\\.]+)" |> regex.from_string
+          let assert Ok(re) = "(\\w+)=(.+)" |> regex.from_string
           let assert [Match(_, [Some(key), Some(val)])] =
             regex.scan(re, rule |> string.trim)
-          case key, dict.get(field_type_by_name, field_name) {
-            "gte", Ok(types.IsInt) | "min", Ok(types.IsInt) -> ["
+          case key, dict.get(field_type_by_name, field_name), check_level {
+            "gte", Ok(types.IsInt), "self" | "min", Ok(types.IsInt), "self" -> [
+              "
               use <- bool.guard({ x." <> field_name <> " >= " <> val <> " } |> bool.negate,
                 Error(\"" <> module_name <> "." <> record_name <> "." <> field_name <> " should be greater or equal than " <> val <> "\"))
-            "]
-            "gte", Ok(types.IsFloat) | "min", Ok(types.IsFloat) -> ["
+            ",
+            ]
+            "gte", Ok(types.IsFloat), "self" | "min", Ok(types.IsFloat), "self" -> [
+              "
               use <- bool.guard({ x." <> field_name <> " >=. " <> val <> " } |> bool.negate,
                 Error(\"" <> module_name <> "." <> record_name <> "." <> field_name <> " should be greater or equal than " <> val <> "\"))
-            "]
-            "gte", Ok(types.IsString) | "min", Ok(types.IsString) -> ["
+            ",
+            ]
+            "gte", Ok(types.IsString), "length"
+            | "min", Ok(types.IsString), "length"
+            -> ["
               use <- bool.guard({ string.length(x." <> field_name <> ") >= " <> val <> " } |> bool.negate,
                 Error(\"" <> module_name <> "." <> record_name <> "." <> field_name <> " length should be greater or equal than " <> val <> "\"))
             "]
-            "gt", Ok(types.IsInt) -> ["
+            "gte", Ok(types.IsList(_)), "length"
+            | "min", Ok(types.IsList(_)), "length"
+            -> ["
+              use <- bool.guard({ list.length(x." <> field_name <> ") >= " <> val <> " } |> bool.negate,
+                Error(\"" <> module_name <> "." <> record_name <> "." <> field_name <> " length should be greater or equal than " <> val <> "\"))
+            "]
+            "gt", Ok(types.IsInt), "self" -> ["
               use <- bool.guard({ x." <> field_name <> " > " <> val <> " } |> bool.negate,
                 Error(\"" <> module_name <> "." <> record_name <> "." <> field_name <> " should be greater than " <> val <> "\"))
             "]
-            "gt", Ok(types.IsFloat) -> ["
+            "gt", Ok(types.IsFloat), "self" -> ["
               use <- bool.guard({ x." <> field_name <> " >. " <> val <> " } |> bool.negate,
                 Error(\"" <> module_name <> "." <> record_name <> "." <> field_name <> " should be greater than " <> val <> "\"))
             "]
-            "gt", Ok(types.IsString) -> ["
+            "gt", Ok(types.IsString), "length" -> ["
               use <- bool.guard({ string.length(x." <> field_name <> ") > " <> val <> " } |> bool.negate,
                 Error(\"" <> module_name <> "." <> record_name <> "." <> field_name <> " length should be greater than " <> val <> "\"))
             "]
-            "lte", Ok(types.IsInt) | "max", Ok(types.IsInt) -> ["
+            "gt", Ok(types.IsList(_)), "length" -> ["
+              use <- bool.guard({ list.length(x." <> field_name <> ") > " <> val <> " } |> bool.negate,
+                Error(\"" <> module_name <> "." <> record_name <> "." <> field_name <> " length should be greater than " <> val <> "\"))
+            "]
+            "lte", Ok(types.IsInt), "self" | "max", Ok(types.IsInt), "self" -> [
+              "
               use <- bool.guard({ x." <> field_name <> " <= " <> val <> " } |> bool.negate,
                 Error(\"" <> module_name <> "." <> record_name <> "." <> field_name <> " should be less or equal than " <> val <> "\"))
-            "]
-            "lte", Ok(types.IsFloat) | "max", Ok(types.IsFloat) -> ["
+            ",
+            ]
+            "lte", Ok(types.IsFloat), "self" | "max", Ok(types.IsFloat), "self" -> [
+              "
               use <- bool.guard({ x." <> field_name <> " <=. " <> val <> " } |> bool.negate,
                 Error(\"" <> module_name <> "." <> record_name <> "." <> field_name <> " should be less or equal than " <> val <> "\"))
-            "]
-            "lte", Ok(types.IsString) | "max", Ok(types.IsString) -> ["
+            ",
+            ]
+            "lte", Ok(types.IsString), "length"
+            | "max", Ok(types.IsString), "length"
+            -> ["
               use <- bool.guard({ string.length(x." <> field_name <> ") <= " <> val <> " } |> bool.negate,
                 Error(\"" <> module_name <> "." <> record_name <> "." <> field_name <> " length should be less or equal than " <> val <> "\"))
             "]
-            "lt", Ok(types.IsInt) -> ["
+            "lte", Ok(types.IsList(_)), "length"
+            | "max", Ok(types.IsList(_)), "length"
+            -> ["
+              use <- bool.guard({ list.length(x." <> field_name <> ") <= " <> val <> " } |> bool.negate,
+                Error(\"" <> module_name <> "." <> record_name <> "." <> field_name <> " length should be less or equal than " <> val <> "\"))
+            "]
+            "lt", Ok(types.IsInt), "self" -> ["
               use <- bool.guard({ x." <> field_name <> " < " <> val <> " } |> bool.negate,
                 Error(\"" <> module_name <> "." <> record_name <> "." <> field_name <> " should be less than " <> val <> "\"))
             "]
-            "lt", Ok(types.IsFloat) -> ["
+            "lt", Ok(types.IsFloat), "self" -> ["
               use <- bool.guard({ x." <> field_name <> " <. " <> val <> " } |> bool.negate,
                 Error(\"" <> module_name <> "." <> record_name <> "." <> field_name <> " should be less than " <> val <> "\"))
             "]
-            "lt", Ok(types.IsString) -> ["
+            "lt", Ok(types.IsString), "length" -> ["
               use <- bool.guard({ string.length(x." <> field_name <> ") < " <> val <> " } |> bool.negate,
                 Error(\"" <> module_name <> "." <> record_name <> "." <> field_name <> " length should be less than " <> val <> "\"))
             "]
-            "eq", Ok(types.IsInt)
-            | "eq", Ok(types.IsFloat)
-            | "eq", Ok(types.IsBool)
+            "lt", Ok(types.IsList(_)), "length" -> ["
+              use <- bool.guard({ list.length(x." <> field_name <> ") < " <> val <> " } |> bool.negate,
+                Error(\"" <> module_name <> "." <> record_name <> "." <> field_name <> " length should be less than " <> val <> "\"))
+            "]
+            "eq", Ok(types.IsInt), "self"
+            | "eq", Ok(types.IsFloat), "self"
+            | "eq", Ok(types.IsBool), "self"
             -> ["
               use <- bool.guard({ x." <> field_name <> " == " <> val <> " } |> bool.negate,
                 Error(\"" <> module_name <> "." <> record_name <> "." <> field_name <> " should be equal to " <> val <> "\"))
             "]
-            "eq", Ok(types.IsString) -> ["
+            "eq", Ok(types.IsString), "self" -> ["
               use <- bool.guard({ x." <> field_name <> " == \"" <> val <> "\" } |> bool.negate,
                 Error(\"" <> module_name <> "." <> record_name <> "." <> field_name <> " should be equal to \\\"" <> val <> "\\\"\"))
             "]
-            "ne", Ok(types.IsInt)
-            | "ne", Ok(types.IsFloat)
-            | "ne", Ok(types.IsBool)
+            "eq", Ok(types.IsString), "length" -> ["
+              use <- bool.guard({ string.length(x." <> field_name <> ") == " <> val <> " } |> bool.negate,
+                Error(\"" <> module_name <> "." <> record_name <> "." <> field_name <> " length should be equal to " <> val <> "\"))
+            "]
+            "eq", Ok(types.IsList(_)), "self" -> ["
+              use <- bool.guard({ x." <> field_name <> " == " <> val <> " } |> bool.negate,
+                Error(\"" <> module_name <> "." <> record_name <> "." <> field_name <> " should be equal to " <> val <> "\"))
+            "]
+            "eq", Ok(types.IsList(_)), "length" -> ["
+              use <- bool.guard({ list.length(x." <> field_name <> ") == " <> val <> " } |> bool.negate,
+                Error(\"" <> module_name <> "." <> record_name <> "." <> field_name <> " length should be equal to " <> val <> "\"))
+            "]
+            "ne", Ok(types.IsInt), "self"
+            | "ne", Ok(types.IsFloat), "self"
+            | "ne", Ok(types.IsBool), "self"
             -> ["
               use <- bool.guard({ x." <> field_name <> " != " <> val <> " } |> bool.negate,
                 Error(\"" <> module_name <> "." <> record_name <> "." <> field_name <> " should not be equal to " <> val <> "\"))
             "]
-            "ne", Ok(types.IsString) -> ["
+            "ne", Ok(types.IsString), "self" -> ["
               use <- bool.guard({ x." <> field_name <> " != \"" <> val <> "\" } |> bool.negate,
                 Error(\"" <> module_name <> "." <> record_name <> "." <> field_name <> " should not be equal to \\\"" <> val <> "\\\"\"))
             "]
-            key, typ ->
+            "ne", Ok(types.IsString), "length" -> ["
+              use <- bool.guard({ string.length(x." <> field_name <> ") != " <> val <> " } |> bool.negate,
+                Error(\"" <> module_name <> "." <> record_name <> "." <> field_name <> " length should not be equal to " <> val <> "\"))
+            "]
+            "ne", Ok(types.IsList(_)), "self" -> ["
+              use <- bool.guard({ x." <> field_name <> " != " <> val <> " } |> bool.negate,
+                Error(\"" <> module_name <> "." <> record_name <> "." <> field_name <> " should not be equal to " <> val <> "\"))
+            "]
+            "ne", Ok(types.IsList(_)), "length" -> ["
+              use <- bool.guard({ list.length(x." <> field_name <> ") != " <> val <> " } |> bool.negate,
+                Error(\"" <> module_name <> "." <> record_name <> "." <> field_name <> " length should not be equal to " <> val <> "\"))
+            "]
+            key, typ, check_level ->
               panic as {
                 "Unknown rule for key: "
                 <> key
                 <> " , type: "
                 <> string.inspect(typ)
+                <> " , nested check: "
+                <> check_level
               }
           }
         }
