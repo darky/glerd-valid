@@ -16,10 +16,10 @@ gleam add --dev glerd glerd_valid
 Example:
 
 ```gleam
-pub type User {
-  /// valid:age:'gte=18, lt=150'
-  /// valid:name:'gte=3, lt=100'
-  User(age: Int, name: String)
+pub type Cat {
+  /// valid:name:length:'gte=3, lt=50'
+  /// valid:lives_count:self:'min=1, max=9'
+  Cat(name: String, lives_count: Int)
 }
 ```
 
@@ -51,15 +51,63 @@ Further documentation can be found at <https://hexdocs.pm/glerd_valid>.
 
 ## Supported metadata
 
-| operator | type                        | description                        |
-|----------|-----------------------------|------------------------------------|
-| gte, min | Int, Float, String (length) | should be greater than or equal to |
-| gt       | Int, Float, String (length) | should be greater than             |
-| lte, max | Int, Float, String (length) | should be less than or equal to    |
-| lt       | Int, Float, String (length) | should be less than                |
-| eq       | Int, Float, String, Bool    | should be equal to                 |
-| ne       | Int, Float, String, Bool    | should not be equal to             |
+#### Operators
 
+| operator | description                        |
+|----------|------------------------------------|
+| gte, min | should be greater than or equal to |
+| gt       |  should be greater than            |
+| lte, max |  should be less than or equal to   |
+| lt       |  should be less than               |
+| eq       |  should be equal to                |
+| ne       |  should not be equal to            |
+
+#### Levels
+
+| level  | description                  |
+|--------|------------------------------|
+| self   | check on Record field itself |
+| length | check on Record field length |
+
+#### Compatibility
+
+| operator | level  | type   |
+|----------|--------|--------|
+| gte, min | self   | Int    |
+| gte, min | self   | Float  |
+| gte, min | length | String |
+| gte, min | length | List   |
+|                            |
+| gt       | self   | Int    |
+| gt       | self   | Float  |
+| gt       | length | String |
+| gt       | length | List   |
+|                            |
+| lte, max | self   | Int    |
+| lte, max | self   | Float  |
+| lte, max | length | String |
+| lte, max | length | List   |
+|                            |
+| lt       | self   | Int    |
+| lt       | self   | Float  |
+| lt       | length | String |
+| lt       | length | List   |
+|                            |
+| eq       | self   | Int    |
+| eq       | self   | Float  |
+| eq       | self   | String |
+| eq       | self   | List   |
+| eq       | self   | Bool   |
+| eq       | length | String |
+| eq       | length | List   |
+|                            |
+| ne       | self   | Int    |
+| ne       | self   | Float  |
+| ne       | self   | String |
+| ne       | self   | List   |
+| ne       | self   | Bool   |
+| ne       | length | String |
+| ne       | length | List   |
 
 ## Development
 
