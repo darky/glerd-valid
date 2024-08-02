@@ -51,6 +51,7 @@ pub fn generate_test() {
       [#("names", types.IsList(types.IsString))],
       "
         valid:names:length:'gte=0, min=0, lte=100, max=100, gt=1, lt=99'
+        valid:names:self:'eq=[\"a\"], ne=[\"b\"]'
       ",
     ),
     #(

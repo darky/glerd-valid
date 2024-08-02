@@ -8,6 +8,8 @@ import glerd/types
 import justin
 import simplifile
 
+const safe_comma = "zqLFwXhSaN3MtHvpYbE6xA2UfmjW9PRduT7ksrZB5G4c8yQDJe"
+
 pub fn generate(root, record_info) {
   let imports =
     record_info
@@ -44,8 +46,10 @@ pub fn generate(root, record_info) {
             _,
             [Some(field_name), Some(check_level), Some(rules)],
           ) = validation
-          let rules = rules |> string.split(",")
+          let rules =
+            rules |> string.replace(",,", safe_comma) |> string.split(",")
           use rule <- list.flat_map(rules)
+          let rule = rule |> string.replace(safe_comma, ",")
           let assert Ok(re) = "(\\w+)=(.+)" |> regex.from_string
           let assert [Match(_, [Some(key), Some(val)])] =
             regex.scan(re, rule |> string.trim)
@@ -147,7 +151,8 @@ pub fn generate(root, record_info) {
             "]
             "eq", Ok(types.IsList(_)), "self" -> ["
               use <- bool.guard({ x." <> field_name <> " == " <> val <> " } |> bool.negate,
-                Error(\"" <> module_name <> "." <> record_name <> "." <> field_name <> " should be equal to " <> val <> "\"))
+                Error(\"" <> module_name <> "." <> record_name <> "." <> field_name <> " should be equal to " <> val
+              |> string.replace("\"", "\\\"") <> "\"))
             "]
             "eq", Ok(types.IsList(_)), "length" -> ["
               use <- bool.guard({ list.length(x." <> field_name <> ") == " <> val <> " } |> bool.negate,
@@ -170,7 +175,8 @@ pub fn generate(root, record_info) {
             "]
             "ne", Ok(types.IsList(_)), "self" -> ["
               use <- bool.guard({ x." <> field_name <> " != " <> val <> " } |> bool.negate,
-                Error(\"" <> module_name <> "." <> record_name <> "." <> field_name <> " should not be equal to " <> val <> "\"))
+                Error(\"" <> module_name <> "." <> record_name <> "." <> field_name <> " should not be equal to " <> val
+              |> string.replace("\"", "\\\"") <> "\"))
             "]
             "ne", Ok(types.IsList(_)), "length" -> ["
               use <- bool.guard({ list.length(x." <> field_name <> ") != " <> val <> " } |> bool.negate,

@@ -307,6 +307,16 @@ pub fn test_list_valid(x: fixture_test.TestList) {
     Error("fixture_test.TestList.names length should be less than 99"),
   )
 
+  use <- bool.guard(
+    { x.names == ["a"] } |> bool.negate,
+    Error("fixture_test.TestList.names should be equal to [\"a\"]"),
+  )
+
+  use <- bool.guard(
+    { x.names != ["b"] } |> bool.negate,
+    Error("fixture_test.TestList.names should not be equal to [\"b\"]"),
+  )
+
   Ok(Nil)
 }
 
